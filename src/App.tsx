@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import supabase from './utils/supabase'
+import { Route, Routes } from 'react-router-dom'
+import Login from './pages/Login'
+import Home from './pages/Home'
 
 type User = {
   id: string
@@ -24,20 +27,18 @@ function App() {
 
     if (data && data.length > 0) {
       setUsers(data)
-      console.log(data)
     }
   }
 
   getUsers()
 }, [])
 
-
   return (
     <>
-      {users.map((user : any) => (
-        <p>{user}</p>
-      ))}
-       
+      <Routes>
+        <Route path="/" element={<Home />}/>
+        <Route path="/login" element={<Login />}/>
+      </Routes>
     </>
   )
 }
