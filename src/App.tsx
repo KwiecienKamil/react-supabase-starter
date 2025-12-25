@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import supabase from './utils/supabase'
 import { Route, Routes } from 'react-router-dom'
-import Login from './pages/Login'
-import Home from './pages/Home'
+import Login from './pages/Login/Login'
+import Home from './pages/Home/Home'
 
 type User = {
   id: string
