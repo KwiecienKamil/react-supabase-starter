@@ -1,37 +1,34 @@
 import { useEffect, useState } from 'react'
-import './App.css'
 import supabase from './utils/supabase'
 import { Route, Routes } from 'react-router-dom'
 import Login from './pages/Login/Login'
 import Home from './pages/Home/Home'
+import type { Session } from '@supabase/supabase-js'
 
-type User = {
-  id: string
-  email: string
-  created_at: string
-}
+
 
 function App() {
-  const [users, setUsers] = useState<User[]>([])
+  const [session, setSession] = useState<Session | null>(null)
 
   useEffect(() => {
-  const getUsers = async () => {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-
-    if (error) {
-      console.error(error)
-      return
-    }
-
-    if (data && data.length > 0) {
-      setUsers(data)
-    }
+  const getSession = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+    setSession(session)
   }
 
-  getUsers()
+  getSession()
+
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    setSession(session)
+  })
+
+  return () => subscription.unsubscribe()
 }, [])
+
+console.log(session)
+
 
   return (
     <>
