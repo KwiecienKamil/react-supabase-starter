@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { registerWithEmail } from "../../features/auth/authSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const dispatch = useAppDispatch();
@@ -49,6 +49,9 @@ const Register = () => {
 
         {error && <p style={{ color: "red", marginTop: 10 }}>{error}</p>}
       </form>
+      <div>
+        Masz już konto? <Link to="/login">Logowanie</Link>
+      </div>
     </div>
   );
 };
