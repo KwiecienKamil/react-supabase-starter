@@ -12,6 +12,7 @@ const Home = ({ session }: HomeProps) => {
     session.user.identities?.[0]?.identity_data?.full_name ||
     session.user.email ||
     "";
+
   const signOut = async () => {
     await supabase.auth.signOut();
     navigate("/login");

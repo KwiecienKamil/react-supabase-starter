@@ -35,6 +35,34 @@ export const logout = createAsyncThunk("auth/logout", async () => {
   return null;
 });
 
+export const registerWithEmail = createAsyncThunk(
+  "auth/registerWithEmail",
+  async (
+    { email, password }: { email: string; password: string },
+    thunkAPI
+  ) => {
+    console.log(email, password);
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) return thunkAPI.rejectWithValue(error.message);
+
+    if (data.user) {
+      const { id } = data.user;
+      const { error: insertError } = await supabase
+        .from("users")
+        .insert([{ id, email }]);
+
+      if (insertError) {
+        return thunkAPI.rejectWithValue(insertError.message);
+      }
+    }
+    return data.session;
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -54,6 +82,18 @@ const authSlice = createSlice({
         state.session = action.payload;
       })
       .addCase(loginWithEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(registerWithEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerWithEmail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.session = action.payload;
+      })
+      .addCase(registerWithEmail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
