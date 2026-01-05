@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 const Login = () => {
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -33,13 +32,9 @@ const Login = () => {
       >
         Zaloguj przez Google
       </button>
-
       <hr />
 
-      {/* --- EMAIL / PASSWORD LOGIN --- */}
       <form onSubmit={handleEmailLogin} style={{ marginTop: 20 }}>
-        <h3>Logowanie przez email</h3>
-
         <input
           type="email"
           placeholder="Email"
