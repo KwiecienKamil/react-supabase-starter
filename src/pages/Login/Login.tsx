@@ -12,11 +12,12 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-    });
-    if (error) alert("Błąd logowania: " + error.message);
-  };
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+  });
+
+  if (error) alert("Błąd logowania: " + error.message);
+};
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +37,6 @@ const Login = () => {
 
       <hr />
 
-      {/* --- EMAIL / PASSWORD LOGIN --- */}
       <form onSubmit={handleEmailLogin} style={{ marginTop: 20 }}>
         <h3>Logowanie przez email</h3>
 

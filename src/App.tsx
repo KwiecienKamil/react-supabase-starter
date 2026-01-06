@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import type { AppDispatch, RootState } from "./store";
@@ -16,23 +16,23 @@ function App() {
   const session = useSelector((state: RootState) => state.auth.session);
 
   useEffect(() => {
-    const initAuth = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      dispatch(setSession(session as Session | null));
-    };
+  const initAuth = async () => {
+    const { data, error } = await supabase.auth.getSession();
+    if(error) {
+      console.error(error)
+    }
+    dispatch(setSession(data.session as Session | null));
+  };
 
-    initAuth();
+  initAuth();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+  const { data: { subscription } } =
+    supabase.auth.onAuthStateChange((event, session) => {
       dispatch(setSession(session as Session | null));
     });
 
-    return () => subscription.unsubscribe();
-  }, [dispatch]);
+  return () => subscription.unsubscribe();
+}, [dispatch]);
 
   useEffect(() => {
     if (session) {
@@ -42,18 +42,18 @@ function App() {
     }
   }, [session, navigate]);
 
+
+
   return (
     <>
       <Routes>
         <Route
           path="/"
-          element={
-            session ? <Home session={session} /> : <Navigate to="/login" />
-          }
+          element={ <Home session={session} />}
         />
         <Route
           path="/login"
-          element={session ? <Navigate to="/" /> : <Login />}
+          element={<Login />}
         />
         <Route
           path="/register"
