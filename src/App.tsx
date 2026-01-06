@@ -35,10 +35,8 @@ function App() {
 }, [dispatch]);
 
   useEffect(() => {
-    if (session) {
-      if (window.location.pathname === "/login") {
-        navigate("/");
-      }
+    if (session && window.location.pathname !== "/") {
+      navigate("/");
     }
   }, [session, navigate]);
 
