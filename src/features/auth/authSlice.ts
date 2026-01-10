@@ -6,12 +6,14 @@ export type AuthState = {
   session: Session | null;
   loading: boolean;
   error: string | null;
+  registrationSuccess: boolean;
 };
 
 const initialState: AuthState = {
   session: null,
   loading: false,
   error: null,
+  registrationSuccess: false,
 };
 
 export const loginWithEmail = createAsyncThunk(
@@ -41,25 +43,19 @@ export const registerWithEmail = createAsyncThunk(
     { email, password }: { email: string; password: string },
     thunkAPI
   ) => {
-    console.log(email, password);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
 
-    if (error) return thunkAPI.rejectWithValue(error.message);
-
-    if (data.user) {
-      const { id } = data.user;
-      const { error: insertError } = await supabase
-        .from("users")
-        .insert([{ id, email }]);
-
-      if (insertError) {
-        return thunkAPI.rejectWithValue(insertError.message);
-      }
+    if (error) {
+      return thunkAPI.rejectWithValue(error.message);
     }
-    return data.session;
+
+    return { email };
   }
 );
 
@@ -88,10 +84,11 @@ const authSlice = createSlice({
       .addCase(registerWithEmail.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.registrationSuccess = false;
       })
-      .addCase(registerWithEmail.fulfilled, (state, action) => {
+      .addCase(registerWithEmail.fulfilled, (state) => {
         state.loading = false;
-        state.session = action.payload;
+        state.registrationSuccess = true;
       })
       .addCase(registerWithEmail.rejected, (state, action) => {
         state.loading = false;

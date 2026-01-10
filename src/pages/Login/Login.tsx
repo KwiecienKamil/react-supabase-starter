@@ -11,12 +11,15 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const signInWithGoogle = async () => {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-  });
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
 
-  if (error) alert("Błąd logowania: " + error.message);
-};
+    if (error) alert("Błąd logowania: " + error.message);
+  };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();

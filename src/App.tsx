@@ -9,6 +9,7 @@ import supabase from "./utils/supabase";
 import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
 import Register from "./pages/Register/Register";
+import AuthCallback from "./features/auth/authCallback";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -16,26 +17,30 @@ function App() {
   const session = useSelector((state: RootState) => state.auth.session);
 
   useEffect(() => {
-  const initAuth = async () => {
-    const { data, error } = await supabase.auth.getSession();
-    if(error) {
-      console.error(error)
-    }
-    dispatch(setSession(data.session as Session | null));
-  };
+    const initAuth = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error(error);
+      }
+      dispatch(setSession(data.session as Session | null));
+    };
 
-  initAuth();
+    initAuth();
 
-  const { data: { subscription } } =
-    supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       dispatch(setSession(session as Session | null));
     });
 
-  return () => subscription.unsubscribe();
-}, [dispatch]);
+    return () => subscription.unsubscribe();
+  }, [dispatch]);
 
   useEffect(() => {
-    if (session && window.location.pathname !== "/") {
+    if (
+      session &&
+      !["/", "/auth/callback"].includes(window.location.pathname)
+    ) {
       navigate("/");
     }
   }, [session, navigate]);
@@ -43,18 +48,13 @@ function App() {
   return (
     <>
       <Routes>
-        <Route
-          path="/"
-          element={ <Home session={session} />}
-        />
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+        <Route path="/" element={<Home session={session} />} />
+        <Route path="/login" element={<Login />} />
         <Route
           path="/register"
           element={session ? <Navigate to="/" /> : <Register />}
         />
+        <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
     </>
   );
