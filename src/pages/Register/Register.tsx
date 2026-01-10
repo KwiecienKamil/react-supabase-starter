@@ -1,37 +1,47 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { registerWithEmail } from "../../features/auth/authSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Register = () => {
   const dispatch = useAppDispatch();
-  const { loading, error, session } = useAppSelector((state) => state.auth);
-  const navigate = useNavigate();
+  const { loading, error, registrationSuccess } = useAppSelector(
+    (state) => state.auth
+  );
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  if (session) {
-    navigate("/");
-  }
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(registerWithEmail({ email: email.trim(), password }));
   };
 
+  if (registrationSuccess) {
+    return (
+      <div style={{ maxWidth: 420, margin: "40px auto", textAlign: "center" }}>
+        <h2>Potwierdź email</h2>
+        <p>
+          Wysłaliśmy link aktywacyjny na <b>{email}</b>.
+          <br />
+          Kliknij w link, aby dokończyć rejestrację.
+        </p>
+        <Link to="/login">Wróć do logowania</Link>
+      </div>
+    );
+  }
+
   return (
     <div style={{ maxWidth: 420, margin: "40px auto", textAlign: "center" }}>
       <h2>Rejestracja</h2>
 
-      <form onSubmit={handleRegister} style={{ marginTop: 20 }}>
+      <form onSubmit={handleRegister}>
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          style={{ display: "block", width: "100%", marginBottom: 10 }}
         />
 
         <input
@@ -40,18 +50,14 @@ const Register = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          style={{ display: "block", width: "100%", marginBottom: 10 }}
         />
 
-        <button type="submit" disabled={loading} style={{ padding: 10 }}>
+        <button type="submit" disabled={loading}>
           {loading ? "Rejestracja..." : "Zarejestruj się"}
         </button>
-
-        {error && <p style={{ color: "red", marginTop: 10 }}>{error}</p>}
+        <Link to="/login">Masz już konto?</Link>
+        {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
-      <div>
-        Masz już konto? <Link to="/login">Logowanie</Link>
-      </div>
     </div>
   );
 };
